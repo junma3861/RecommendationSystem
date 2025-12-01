@@ -28,6 +28,10 @@ class DatabaseConfig:
         self.mongo_db_name = os.getenv('MONGO_DATABASE', 'recommendation_db')
         self.mongo_client = None
         self.mongo_db = None
+        
+        # OpenAI Configuration
+        self.openai_api_key = os.getenv('OPENAI_API_KEY')
+        self.openai_model = os.getenv('OPENAI_MODEL', 'gpt-4o-mini')
     
     def get_sql_engine(self):
         """

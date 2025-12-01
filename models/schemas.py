@@ -114,3 +114,47 @@ def get_purchase_history_schema():
         "shipping_address": "str",
         "status": "str (completed/pending/cancelled)"
     }
+
+
+# Pydantic models for API requests/responses
+from pydantic import BaseModel, Field
+from typing import List, Dict, Any, Optional
+
+
+class ChatRequest(BaseModel):
+    """Request model for chatbot queries"""
+    query: str = Field(..., description="Natural language query from user", min_length=1)
+    user_id: Optional[int] = Field(None, description="Optional user ID for personalization")
+    session_id: Optional[str] = Field(None, description="Session ID for conversation context")
+    n_results: int = Field(default=10, ge=1, le=50, description="Number of results to return")
+    use_recommendations: bool = Field(default=True, description="Whether to use recommendation engine for personalization")
+
+
+class SearchRequest(BaseModel):
+    """Request model for search queries"""
+    query: str = Field(..., description="Search query", min_length=1)
+    user_id: Optional[int] = Field(None, description="Optional user ID for personalization")
+    session_id: Optional[str] = Field(None, description="Session ID for conversation context")
+    n_results: int = Field(default=10, ge=1, le=50, description="Number of results to return")
+    use_recommendations: bool = Field(default=True, description="Use collaborative filtering")
+
+
+class ChatResponse(BaseModel):
+    """Response model for chatbot interactions"""
+    query: str = Field(..., description="Original user query")
+    intent: str = Field(..., description="Detected intent (search, recommendation, question, greeting)")
+    response: str = Field(..., description="Natural language response")
+    products: List[Dict[str, Any]] = Field(..., description="List of recommended products")
+    count: int = Field(..., description="Number of products returned")
+    query_analysis: Optional[Dict[str, Any]] = Field(None, description="Detailed query analysis")
+    suggestions: Optional[List[str]] = Field(None, description="Suggested follow-up queries")
+
+
+class SearchResponse(BaseModel):
+    """Response model for search results"""
+    query: str = Field(..., description="Original search query")
+    intent: str = Field(..., description="Detected query intent")
+    response: str = Field(..., description="Natural language summary of results")
+    products: List[Dict[str, Any]] = Field(..., description="Search results")
+    count: int = Field(..., description="Number of results")
+    query_analysis: Dict[str, Any] = Field(..., description="Query processing details")
